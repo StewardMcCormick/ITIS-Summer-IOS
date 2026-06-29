@@ -212,10 +212,45 @@ extension Library {
     }
 }
 
-let library: Library = Library.createTestLibrary()
+class LibraryUser {
+    let name: String
+    let id: Int
+    
+    init(name: String, id: Int) {
+        self.name = name
+        self.id = id
+    }
+    
+    func maxBooksCount() -> Int {
+        return 0
+    }
+}
 
-print(library.getAllBooksNames())
+class Student: LibraryUser {
+    override func maxBooksCount() -> Int {
+        return 3
+    }
+}
 
-print(library.getTotalPageNum())
+class Teacher: LibraryUser {
+    override func maxBooksCount() -> Int {
+        return 10
+    }
+}
 
-print(library.getTop3VolumesBooks())
+//let library: Library = Library.createTestLibrary()
+//
+//print(library.getAllBooksNames())
+//
+//print(library.getTotalPageNum())
+//
+//print(library.getTop3VolumesBooks())
+
+let users: [LibraryUser] = [
+    Teacher(name: "Greg", id: 1),
+    Student(name: "Steward", id: 2),
+    Student(name: "McCormick", id: 3),
+    Teacher(name: "Mikhail", id: 4)
+]
+
+users.forEach { print($0.maxBooksCount()) }
