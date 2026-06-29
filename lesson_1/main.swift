@@ -14,17 +14,6 @@ enum Genre: String {
     case NonFiction = "нон-фикшн"
 }
 
-struct Book {
-    var name: String
-    var author: String
-    var genre: Genre
-    var publishDate: Date
-    var pageNum: UInt16
-    var isAvailable: Bool
-    
-    var shortDescription: String { "\(name) — \(author) (\(pageNum) стр.)" }
-}
-
 func genreDespription(genre value: Genre) -> String {
     switch value {
     case .Fantasy:
@@ -144,3 +133,23 @@ let books: [Book] = [
         isAvailable: true
     )
 ]
+
+func findBook(_ array: [Book], byName name: String) -> Book? {
+    for book in array {
+        if book.name == name  {
+            return book
+        }
+    }
+    
+    return nil
+}
+
+func findBook(_ array: [Book], byAuthor author: String) -> Book? {
+    for book in array {
+        if book.author == author  {
+            return book
+        }
+    }
+    
+    return nil
+}
