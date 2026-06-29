@@ -201,8 +201,21 @@ class Library {
     }
 }
 
+extension Library {
+    func getTop3VolumesBooks() -> [Book] {
+        let sortedBooks = self.getSortedBooksListByPageNum(decrease: true)
+        if sortedBooks.count <= 3 {
+            return sortedBooks
+        }
+        
+        return Array(sortedBooks.prefix(3))
+    }
+}
+
 let library: Library = Library.createTestLibrary()
 
 print(library.getAllBooksNames())
 
 print(library.getTotalPageNum())
+
+print(library.getTop3VolumesBooks())
