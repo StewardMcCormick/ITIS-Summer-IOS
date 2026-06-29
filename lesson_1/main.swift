@@ -49,9 +49,19 @@ struct Book: Printable {
         print("Страниц: \(pageNum)")
         print("Доступность: \(isAvailable ? "доступна" : "недоступна")")
     }
+    
+    mutating func issue() -> Void {
+        guard isAvailable else {
+            print("Книга '\(name)' недоступна")
+            return
+        }
+        
+        isAvailable = false
+        print("Книга '\(name)' успешно выдана")
+    }
 }
 
-let books: [Book] = [
+var books: [Book] = [
     Book(
         name: "1984",
         author: "Джордж Оруэлл",
@@ -134,8 +144,8 @@ let books: [Book] = [
     )
 ]
 
-func findBook(_ array: [Book], byName name: String) -> Book? {
-    for book in array {
+func findBook(byName name: String) -> Book? {
+    for book in books {
         if book.name == name  {
             return book
         }
@@ -144,8 +154,8 @@ func findBook(_ array: [Book], byName name: String) -> Book? {
     return nil
 }
 
-func findBook(_ array: [Book], byAuthor author: String) -> Book? {
-    for book in array {
+func findBook(byAuthor author: String) -> Book? {
+    for book in books {
         if book.author == author  {
             return book
         }
