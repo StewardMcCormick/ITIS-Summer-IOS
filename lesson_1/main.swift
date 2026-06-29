@@ -97,6 +97,24 @@ class Library {
         books.forEach{ $0.PrintInfo() }
     }
     
+    func getSortedBooksListByPageNum(decrease: Bool) -> [Book] {
+        guard decrease else {
+            return books.sorted { $0.pageNum < $1.pageNum }
+        }
+        
+        return books.sorted { $1.pageNum < $0.pageNum }
+    }
+    
+    func getAllBooksNames() -> [String] {
+        return books.map { $0.name }
+    }
+    
+    func getTotalPageNum() -> UInt64 {
+        var sum: UInt64 = 0
+        books.forEach { sum += UInt64($0.pageNum) }
+        return sum
+    }
+    
     static func createTestLibrary() -> Library {
         return Library(books: [
             Book(
@@ -182,3 +200,9 @@ class Library {
         ])
     }
 }
+
+let library: Library = Library.createTestLibrary()
+
+print(library.getAllBooksNames())
+
+print(library.getTotalPageNum())
