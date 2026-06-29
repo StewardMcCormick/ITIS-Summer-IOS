@@ -38,6 +38,30 @@ func genreDespription(genre value: Genre) -> String {
     }
 }
 
+protocol Printable {
+    func PrintInfo() -> Void
+}
+
+struct Book: Printable {
+    var name: String
+    var author: String
+    var genre: Genre
+    var publishDate: Date
+    var pageNum: UInt16
+    var isAvailable: Bool
+    
+    var shortDescription: String { "\(name) — \(author) (\(pageNum) стр.)" }
+    
+    func PrintInfo() -> Void {
+        print("Название: \(name)")
+        print("Автор: \(author)")
+        print("Жанр: \(genre.rawValue)")
+        print("Дата публикации: \(publishDate)")
+        print("Страниц: \(pageNum)")
+        print("Доступность: \(isAvailable ? "доступна" : "недоступна")")
+    }
+}
+
 let books: [Book] = [
     Book(
         name: "1984",
