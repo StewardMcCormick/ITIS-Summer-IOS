@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct GreetingView: View {
-    @AppStorage("username") var username: String = ""
+    
+    @Environment(MoodListViewModel.self) private var moodViewModel
+    @AppStorage("storedUsername") private var username = ""
     
     var body: some View {
         
@@ -21,7 +23,7 @@ struct GreetingView: View {
                 .padding(.top, 5)
             
             PrimaryButton(title: "Начать") {
-                // main page
+                moodViewModel.name(username)
             }
             .padding([.leading, .trailing], 30)
         }
@@ -29,6 +31,6 @@ struct GreetingView: View {
     }
 }
 
-#Preview {
-    GreetingView()
-}
+//#Preview {
+//    GreetingView()
+//}

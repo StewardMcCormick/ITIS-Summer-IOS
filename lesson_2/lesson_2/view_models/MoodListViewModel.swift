@@ -5,11 +5,24 @@
 //  Created by Егор Бессонов on 30.06.2026.
 //
 
-import Foundation
+import SwiftUI
 
 @Observable
 class MoodListViewModel {
+    
+    var username: String = ""
     var moodsHistory: [Mood] = []
+    var isNamed: Bool = false
+    
+    func name(_ name: String) {
+        if name.isEmpty {
+            isNamed = false
+            return
+        }
+        
+        username = name
+        isNamed = true
+    }
     
     func addMood(mood: Mood) {
         moodsHistory.append(mood)
