@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @State private var moodListViewModel = MoodListViewModel()
+    @State private var moodListViewModel = MoodListViewModel.getTestList()
     
     var body: some View {
         if moodListViewModel.isNamed {

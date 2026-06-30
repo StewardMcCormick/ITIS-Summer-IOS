@@ -14,6 +14,7 @@ enum MoodType: String {
 }
 
 class Mood: Equatable {
+    var id: Int = 0
     let type: MoodType
     let emoji: String
     var timestamp: Date
@@ -38,6 +39,10 @@ class Mood: Equatable {
         self.init(type: type)
         
         self.description = description
+    }
+    
+    func stringTimestamp() -> String {
+        timestamp.formatted()
     }
     
     static func == (o1: Mood, o2: Mood) -> Bool {

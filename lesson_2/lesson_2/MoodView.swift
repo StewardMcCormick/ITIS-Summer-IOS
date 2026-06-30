@@ -13,7 +13,32 @@ struct MoodView: View {
     
     var body: some View {
         VStack {
+            Text("Привет, \(moodListViewModel.username)!")
+                .padding()
+                .font(.largeTitle)
+            Text("Вот, как менялось твое настроение :)")
+                .font(.title)
+                    
+            PrimaryButton(title: "Добавить запись") {
+                //
+            }
+            .padding([.leading, .trailing], 50)
             
+            Spacer()
+            
+            List {
+                ForEach(moodListViewModel.moodsHistory, id: \.id) { mood in
+                    MoodListRow(mood: mood)
+                }
+                .onDelete { indexSet in
+                    if let idx = indexSet.first {
+                        moodListViewModel.deleteMood(idx)
+                    }
+                }
+            }
+            
+            .padding()
+            .listStyle(.plain)
         }
     }
 }
