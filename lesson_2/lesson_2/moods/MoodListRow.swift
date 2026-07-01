@@ -8,17 +8,27 @@
 import SwiftUI
 
 struct MoodListRow: View {
-    let mood: Mood
+    
+    @State var mood: Mood
+    @State private var isPresent: Bool = false
     
     var body: some View {
         HStack {
-            Text(mood.emoji)
-            
             Text(mood.type.rawValue)
+            
+            Text(mood.description)
             
             Spacer()
             
             Text(mood.stringTimestamp())
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            isPresent = true
+        }
+        .sheet(isPresented: $isPresent) {
+            MoodDetailsCard(mood: $mood)
         }
     }
 }

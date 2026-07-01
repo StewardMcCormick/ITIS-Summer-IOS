@@ -32,21 +32,17 @@ class MoodListViewModel {
     }
     
     func deleteMood(_ idx: Int) {
-        for (i, m) in moodsHistory.enumerated() {
-            if idx == m.id {
-                moodsHistory.remove(at: i)
-                break
-            }
-        }
+        guard idx < moodsHistory.count else { return }
+        moodsHistory.remove(at: idx)
     }
     
     static func getTestList() -> MoodListViewModel {
         let model = MoodListViewModel()
         
-        model.addMood(mood: Mood(type: .Happy, description: "happy"))
+        model.addMood(mood: Mood(type: .Happy, comment: "happy"))
         model.addMood(mood: Mood(type: .Normal))
-        model.addMood(mood: Mood(type: .Sab))
-        model.addMood(mood: Mood(type: .Sab, description: "Sad"))
+        model.addMood(mood: Mood(type: .Sad))
+        model.addMood(mood: Mood(type: .Sad, comment: "Sad"))
         
         return model
     }
