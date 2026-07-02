@@ -7,43 +7,69 @@
 
 import SwiftUI
 
+enum MoodListState {
+    case loading
+    case success([Mood])
+    case error(String)
+}
+
 @Observable
 class MoodListViewModel {
-    
     private var lastId: Int = 0
-    var username: String = ""
-    var moodsHistory: [Mood] = []
-    var isNamed: Bool = false
+    var user: User? = nil
+    var searchText: String = ""
+    var state: MoodListState = .loading
+    
+    let service = MoodService()
+    
+    var filteredMoods: [Mood] {
+        let sorted = service.moods.sorted { $0.timestamp > $1.timestamp }
+        guard !searchText.isEmpty else { return sorted }
+        return sorted.filter { mood in
+            mood.description.localizedCaseInsensitiveContains(searchText) ||
+            mood.comment.localizedCaseInsensitiveContains(searchText) ||
+            mood.stringTimestamp().localizedCaseInsensitiveContains(searchText)
+        }
+    }
     
     func name(_ name: String) {
-        if name.isEmpty {
-            isNamed = false
-            return
+        guard !name.isEmpty else { return }
+        user = User(username: name)
+    }
+    
+    func loadMoods() async {
+        state = .loading
+        do {
+            let moods = try await service.fetchMoods()
+            lastId = moods.map(\.id).max() ?? 0
+            state = .success(moods)
+        } catch {
+            state = .error(error.localizedDescription)
         }
-        
-        username = name
-        isNamed = true
     }
     
     func addMood(mood: Mood) {
         lastId += 1
         mood.id = lastId
-        moodsHistory.append(mood)
+        service.addMood(mood)
+        state = .success(service.moods)
     }
     
-    func deleteMood(_ idx: Int) {
-        guard idx < moodsHistory.count else { return }
-        moodsHistory.remove(at: idx)
+    func deleteMood(by id: Int) {
+        service.deleteMood(withId: id)
+        state = .success(service.moods)
     }
     
     static func getTestList() -> MoodListViewModel {
         let model = MoodListViewModel()
-        
-        model.addMood(mood: Mood(type: .Happy, comment: "happy"))
-        model.addMood(mood: Mood(type: .Normal))
-        model.addMood(mood: Mood(type: .Sad))
-        model.addMood(mood: Mood(type: .Sad, comment: "Sad"))
-        
+        model.user = User(username: "Тестер")
+        model.service.moods = [
+            Mood(type: .Happy, comment: "happy"),
+            Mood(type: .Normal),
+            Mood(type: .Sad),
+            Mood(type: .Sad, comment: "Sad")
+        ]
+        model.state = .success(model.service.moods)
         return model
     }
 }

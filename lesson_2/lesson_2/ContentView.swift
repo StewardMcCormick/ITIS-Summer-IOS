@@ -12,7 +12,7 @@ struct ContentView: View {
     @State private var moodListViewModel = MoodListViewModel()
     
     var body: some View {
-        if moodListViewModel.isNamed {
+        if moodListViewModel.user != nil {
             MoodView()
                 .environment(moodListViewModel)
         } else {

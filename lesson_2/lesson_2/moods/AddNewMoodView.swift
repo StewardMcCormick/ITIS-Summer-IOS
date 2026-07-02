@@ -14,27 +14,41 @@ struct AddNewMoodView: View {
     @State private var mood: Mood = Mood(type: .Happy)
     
     var body: some View {
-        VStack {
-            Text("Добавление чувств🪄")
-                .padding()
-                .font(.title)
-                .fontWeight(.bold)
-            
-            MoodPicker(mood: $mood)
-                .padding(.bottom, 50)
-                        
-            TextEditor(text: $mood.comment)
-                            .padding(8)
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(8)
-                            .frame(height: 150)
-         
-            Spacer()
-            
-            Button("Сохранить") {
-                moodModel.addMood(mood: mood)
-                dismiss()
+        NavigationStack {
+            Form {
+                Section("Настроение") {
+                    Picker("Выберите", selection: $mood.type) {
+                        ForEach(MoodType.allCases, id: \.self) { type in
+                            Text(type.rawValue).tag(type)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+                
+                Section("Комментарий") {
+                    TextEditor(text: $mood.comment)
+                        .frame(minHeight: 100)
+                }
+            }
+            .navigationTitle("Добавление чувств🪄")
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Сохранить") {
+                        moodModel.addMood(mood: mood)
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Отмена") {
+                        dismiss()
+                    }
+                }
             }
         }
     }
+}
+
+#Preview {
+    AddNewMoodView()
+        .environment(MoodListViewModel.getTestList())
 }

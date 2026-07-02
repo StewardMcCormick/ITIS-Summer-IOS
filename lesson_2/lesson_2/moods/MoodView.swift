@@ -13,37 +13,70 @@ struct MoodView: View {
     @State private var isAddingMood: Bool = false
     
     var body: some View {
-        VStack {
-            Text("Привет, \(moodListViewModel.username)!")
-                .padding()
-                .font(.largeTitle)
-            Text("Вот, как менялось твое настроение :)")
-                .font(.title)
-                    
-            PrimaryButton(title: "Добавить запись") {
-                isAddingMood = true
-            }
-            .padding([.leading, .trailing], 50)
-            
-            Spacer()
-            
-            List {
-                ForEach(moodListViewModel.moodsHistory.reversed(), id: \.id) { mood in
-                    MoodListRow(mood: mood)
-                }
-                .onDelete { indexSet in
-                    if let idx = indexSet.first {
-                        moodListViewModel.deleteMood(idx)
+        @Bindable var viewModel = moodListViewModel
+        
+        NavigationStack {
+            Group {
+                switch viewModel.state {
+                case .loading:
+                    ProgressView("Загрузка...")
+                        .scaleEffect(1.5)
+                case .success:
+                    mainContent
+                case .error(let message):
+                    VStack(spacing: 16) {
+                        Text("Ошибка: \(message)")
+                            .foregroundColor(.red)
+                        Button("Повторить") {
+                            Task { await viewModel.loadMoods() }
+                        }
                     }
                 }
             }
-            
-            .padding()
-            .listStyle(.plain)
+            .navigationTitle("Привет, \(viewModel.user?.username ?? "")!")
+            .searchable(text: $viewModel.searchText, prompt: "Поиск по настроению")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button(action: { isAddingMood = true }) {
+                        Label("Добавить запись", systemImage: "plus")
+                    }
+                }
+            }
+            .sheet(isPresented: $isAddingMood) {
+                AddNewMoodView()
+                    .environment(moodListViewModel)
+            }
+            .task {
+                await viewModel.loadMoods()
+            }
+            .navigationDestination(for: Mood.self) { mood in
+                MoodDetailView(mood: mood)
+            }
         }
-        .sheet(isPresented: $isAddingMood) {
-            AddNewMoodView()
-                .environment(moodListViewModel)
+    }
+    
+    private var mainContent: some View {
+        List {
+            ForEach(moodListViewModel.filteredMoods, id: \.id) { mood in
+                NavigationLink(value: mood) {
+                    MoodListRow(mood: mood)
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                }
+                .buttonStyle(.plain)
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button(role: .destructive) {
+                        moodListViewModel.deleteMood(by: mood.id)
+                    } label: {
+                        Label("Удалить", systemImage: "trash")
+                    }
+                }
+            }
         }
+        .listStyle(.plain)
+        .padding(.horizontal, -8)
     }
 }

@@ -28,7 +28,7 @@ enum MoodType: String, CaseIterable {
     }
 }
 
-class Mood: Equatable {
+class Mood: Identifiable, Hashable {
     var id: Int = 0
     var type: MoodType
     var timestamp: Date
@@ -39,12 +39,22 @@ class Mood: Equatable {
     
     init(type: MoodType) {
         self.type = type
-        timestamp = Date()
+        self.timestamp = Date()
     }
     
     convenience init(type: MoodType, comment: String) {
         self.init(type: type)
         self.comment = comment
+    }
+    
+    convenience init(id: Int, type: MoodType) {
+        self.init(type: type)
+        self.id = id
+    }
+    
+    convenience init(id: Int, type: MoodType, comment: String) {
+        self.init(type: type, comment: comment)
+        self.id = id
     }
     
     func stringTimestamp() -> String {
@@ -54,10 +64,14 @@ class Mood: Equatable {
         return formatter.string(from: timestamp)
     }
     
-    static func == (o1: Mood, o2: Mood) -> Bool {
-        return o1.description == o2.description &&
-               o1.comment == o2.comment &&
-               o1.type == o2.type &&
-               o1.timestamp == o2.timestamp
+    static func == (lhs: Mood, rhs: Mood) -> Bool {
+        lhs.id == rhs.id && lhs.type == rhs.type && lhs.timestamp == rhs.timestamp && lhs.comment == rhs.comment
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(type)
+        hasher.combine(timestamp)
+        hasher.combine(comment)
     }
 }
